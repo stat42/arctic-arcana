@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/arctic-arcana/static/css/main.7f8f6f0a.css",
-    "main.js": "/arctic-arcana/static/js/main.b80f64b0.js",
+    "main.css": "/arctic-arcana/static/css/main.d0275798.css",
+    "main.js": "/arctic-arcana/static/js/main.6c8893e7.js",
     "static/js/453.9e0d51f7.chunk.js": "/arctic-arcana/static/js/453.9e0d51f7.chunk.js",
     "index.html": "/arctic-arcana/index.html",
-    "main.7f8f6f0a.css.map": "/arctic-arcana/static/css/main.7f8f6f0a.css.map",
-    "main.b80f64b0.js.map": "/arctic-arcana/static/js/main.b80f64b0.js.map",
+    "main.d0275798.css.map": "/arctic-arcana/static/css/main.d0275798.css.map",
+    "main.6c8893e7.js.map": "/arctic-arcana/static/js/main.6c8893e7.js.map",
     "453.9e0d51f7.chunk.js.map": "/arctic-arcana/static/js/453.9e0d51f7.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7f8f6f0a.css",
-    "static/js/main.b80f64b0.js"
+    "static/css/main.d0275798.css",
+    "static/js/main.6c8893e7.js"
   ]
 }

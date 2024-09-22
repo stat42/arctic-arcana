@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/arctic-arcana/static/css/main.20ef2f59.css",
+    "main.js": "/arctic-arcana/static/js/main.fa36b844.js",
+    "static/js/453.9e0d51f7.chunk.js": "/arctic-arcana/static/js/453.9e0d51f7.chunk.js",
+    "index.html": "/arctic-arcana/index.html",
+    "main.20ef2f59.css.map": "/arctic-arcana/static/css/main.20ef2f59.css.map",
+    "main.fa36b844.js.map": "/arctic-arcana/static/js/main.fa36b844.js.map",
+    "453.9e0d51f7.chunk.js.map": "/arctic-arcana/static/js/453.9e0d51f7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.20ef2f59.css",
+    "static/js/main.fa36b844.js"
+  ]
+}

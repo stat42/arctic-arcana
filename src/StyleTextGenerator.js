@@ -127,7 +127,43 @@ const StyleTextGenerator = () => {
   }, []);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(decoratedOutput);
+    const copyToClipboard = (text) => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      } else {
+        // Create a temporary element
+        const elem = document.createElement('textarea');
+        // Set its value to the text we want to copy
+        elem.value = text;
+        // Make it readonly to be tamper-proof
+        elem.setAttribute('readonly', '');
+        // Move outside the screen to make it invisible
+        elem.style.position = 'absolute';
+        elem.style.left = '-9999px';
+        // Append the element to the body
+        document.body.appendChild(elem);
+        // Check if there's any content selected previously
+        const selected = 
+          document.getSelection().rangeCount > 0
+            ? document.getSelection().getRangeAt(0)
+            : false;
+        // Select the text
+        elem.select();
+        // Use the classic 'copy' command
+        document.execCommand('copy');
+        // Remove the element
+        document.body.removeChild(elem);
+        // If a selection existed before copying
+        if (selected) {
+          // Unselect everything on the HTML document
+          document.getSelection().removeAllRanges();
+          // Restore the original selection
+          document.getSelection().addRange(selected);
+        }
+      }
+    };
+  
+    copyToClipboard(decoratedOutput);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [decoratedOutput]);
@@ -164,8 +200,8 @@ const StyleTextGenerator = () => {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
-      <div className="relative max-w-md w-full bg-white bg-opacity-80 p-8 rounded-lg shadow-lg">
-        <img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} alt="Snow" className="absolute -top-7 -right-5 w-24 h-24 object-contain" />
+<div className="relative max-w-md w-full bg-white bg-opacity-80 p-8 rounded-lg shadow-lg mx-4 sm:mx-6 lg:mx-8">
+<img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} alt="Snow" className="absolute -top-7 -right-5 w-24 h-24 object-contain" />
         <h1 className="text-2xl font-bold text-center text-blue-800 mb-6 font-rowdies">Arctic Arcana</h1>
         <div className="mb-4">
           <input

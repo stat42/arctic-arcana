@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 const StyleTextGenerator = () => {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [selectedDecoration, setSelectedDecoration] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [currentCat, setCurrentCat] = useState('');
-  const [catAnimationClass, setCatAnimationClass] = useState('');
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [styledCache, setStyledCache] = useState({});
-
+  // Placeholders for constants
   const catImages = [
     `${process.env.PUBLIC_URL}/images/catspellbinder-0.png`,
     `${process.env.PUBLIC_URL}/images/catspellbinder-1.png`,
@@ -95,60 +87,57 @@ const StyleTextGenerator = () => {
     "z": ["z", "ƶ", "ʑ", "ȥ", "z", "ž", "ʐ", "ź", "Ż", "ƶ", "ẓ", "ž", "ƶ", "ż", "Ž", "Ƶ", "Z", "Ź", "Z", "Ẕ"]
   };
 
-  const stylizeText = useCallback((text, ignoreCache = false) => {
-    const updatedCache = { ...styledCache };
-    const styledText = text.toLowerCase().split('').map((char, index) => {
+  const [input, setInput] = useState('');
+  const [selectedDecoration, setSelectedDecoration] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [currentCatIndex, setCurrentCatIndex] = useState(0);
+  const [catAnimationClass, setCatAnimationClass] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [seed, setSeed] = useState(() => Math.random());
+
+  const stylizeText = useCallback((text, currentSeed) => {
+    return text.toLowerCase().split('').map((char, index) => {
       if (styleMap[char]) {
-        if (ignoreCache || !updatedCache[index]) {
-          updatedCache[index] = styleMap[char][Math.floor(Math.random() * styleMap[char].length)];
-        }
-        return updatedCache[index];
+        const styleIndex = Math.floor((currentSeed * 1000 + index) % styleMap[char].length);
+        return styleMap[char][styleIndex];
       }
       return char;
     }).join('');
-    setStyledCache(updatedCache);
-    return styledText;
-  }, [styleMap, styledCache]);
+  }, [styleMap]);
 
-  useEffect(() => {
-    if (input === "") {
-      setOutput("");
-    } else {
-      setOutput(stylizeText(input));
-    }
-  }, [input, stylizeText]);
+  const output = useMemo(() => stylizeText(input, seed), [input, seed, stylizeText]);
 
-  useEffect(() => {
-    const randomCat = catImages[Math.floor(Math.random() * catImages.length)];
-    setCurrentCat(randomCat);
-  }, []);
-
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
-
-  const handleDecorationChange = (e) => {
-    setSelectedDecoration(e.target.value);
-  };
-
-  const handleCopy = () => {
+  const decoratedOutput = useMemo(() => {
     const decoration = selectedDecoration 
       ? decorations.find(d => d.open === selectedDecoration)
       : { open: '', close: '' };
-    
-    const textToCopy = `${decoration.open}${output}${decoration.close}`;
-    navigator.clipboard.writeText(textToCopy);
-  
+    return `${decoration.open}${output}${decoration.close}`;
+  }, [output, selectedDecoration, decorations]);
+
+  useEffect(() => {
+    setCurrentCatIndex(Math.floor(Math.random() * catImages.length));
+  }, []);
+
+  const handleInputChange = useCallback((e) => {
+    setInput(e.target.value);
+  }, []);
+
+  const handleDecorationChange = useCallback((e) => {
+    setSelectedDecoration(e.target.value);
+  }, []);
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(decoratedOutput);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [decoratedOutput]);
 
-  const handleShakeItUp = () => {
-    setOutput(stylizeText(input, true));
+  const handleShakeItUp = useCallback(() => {
+    setSeed(Math.random());
     const element = document.querySelector('.shakeable');
     element.classList.add('shake-animation');
     setTimeout(() => element.classList.remove('shake-animation'), 500);
-  };
+  }, []);
 
   const handleCatClick = useCallback(() => {
     if (isAnimating) return;
@@ -157,12 +146,13 @@ const StyleTextGenerator = () => {
     setCatAnimationClass('fade-out');
   
     setTimeout(() => {
-      let newCat;
-      do {
-        newCat = catImages[Math.floor(Math.random() * catImages.length)];
-      } while (newCat === currentCat);
-  
-      setCurrentCat(newCat);
+      setCurrentCatIndex(prevIndex => {
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * catImages.length);
+        } while (newIndex === prevIndex);
+        return newIndex;
+      });
       setCatAnimationClass('fade-in');
   
       setTimeout(() => {
@@ -170,7 +160,7 @@ const StyleTextGenerator = () => {
         setIsAnimating(false);
       }, 500);
     }, 250);
-  }, [isAnimating, catImages, currentCat]);
+  }, [isAnimating, catImages.length]);
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
@@ -202,9 +192,7 @@ const StyleTextGenerator = () => {
         </div>
         <div className="bg-white p-4 rounded border border-gray-300 mb-4 min-h-[100px]">
           <p className="text-center text-lg font-medium text-blue-800 break-all">
-            {selectedDecoration ? decorations.find(d => d.open === selectedDecoration).open : ''}
-            {output}
-            {selectedDecoration ? decorations.find(d => d.open === selectedDecoration).close : ''}
+            {decoratedOutput}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -237,7 +225,7 @@ const StyleTextGenerator = () => {
           </div>
         </div>
         <img 
-          src={currentCat} 
+          src={catImages[currentCatIndex]}
           alt="Cat" 
           className={`absolute bottom-0 right-[-40px] w-50 h-80 object-contain ${catAnimationClass}`} 
           onClick={handleCatClick}

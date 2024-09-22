@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 const StyleTextGenerator = () => {
-  // Placeholders for constants
+
   const catImages = useMemo(() => [
     `${process.env.PUBLIC_URL}/images/catspellbinder-0.png`,
     `${process.env.PUBLIC_URL}/images/catspellbinder-1.png`,
@@ -171,6 +171,8 @@ const StyleTextGenerator = () => {
   const [catAnimationClass, setCatAnimationClass] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
   const [seed, setSeed] = useState(() => Math.random());
+  const [isShaking, setIsShaking] = useState(false); // Define the state for shaking animation
+
  // Function to preload images
  const preloadImages = useCallback(() => {
   catImages.forEach(image => {
@@ -259,10 +261,16 @@ useEffect(() => {
 
   const handleShakeItUp = useCallback(() => {
     setSeed(Math.random());
+    setIsShaking(true); // Activate the shake and glow effect
+  
     const element = document.querySelector('.shakeable');
     element.classList.add('shake-animation');
-    setTimeout(() => element.classList.remove('shake-animation'), 500);
+    setTimeout(() => {
+      element.classList.remove('shake-animation');
+      setIsShaking(false); // Remove shake and glow after animation completes
+    }, 500); // Match the duration of the shake animation
   }, []);
+  
 
   const handleCatClick = useCallback(() => {
     if (isAnimating) return;
@@ -321,15 +329,17 @@ useEffect(() => {
           </p>
         </div>
         <div className="flex space-x-2">
-          <div 
-            onClick={handleShakeItUp} 
-            className="relative w-32 h-32 cursor-pointer shakeable" 
-            style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/FireCrystal.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-          >
-            <span className="absolute inset-0 flex items-center justify-center text-white text-shadow text-center">
-              <>Shake<br /> it up!</>
-            </span>
-          </div>
+        <div 
+  onClick={handleShakeItUp} 
+  className={`relative w-32 h-32 cursor-pointer shakeable ${isShaking ? 'glow-fire' : ''}`} 
+  style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/FireCrystal.png)`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: isShaking ? 0.8 : 1 }}  // Opacity for translucency when shaking
+>
+  <span className="absolute inset-0 flex items-center justify-center text-white text-shadow text-center">
+    <>Shake<br /> it up!</>
+  </span>
+</div>
+
+
           <div 
             onClick={handleCopy} 
             className={`relative w-32 h-32 cursor-pointer flex items-center justify-center ${copied ? 'animate-pulseShrinkGrow' : ''}`} 

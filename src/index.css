@@ -46,9 +46,35 @@
   90% { transform: translate(1px, 2px) rotate(0deg); }
   100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
-.shake-animation {
-  animation: shake 0.5s;
+/* Pulsing fire effect - subtle fire glow on image contours */
+@keyframes pulseFire {
+  0% {
+    filter: drop-shadow(0 0 15px rgba(255, 69, 0, 0.6)) drop-shadow(0 0 30px rgba(61, 43, 62, 0.8)) drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(255, 47, 0, 0.9)) drop-shadow(0 0 50px rgb(255, 0, 0)) drop-shadow(0 0 25px rgba(255, 0, 0, 1));
+    opacity: 0.85;
+  }
+  100% {
+    filter: drop-shadow(0 0 15px rgba(255, 69, 0, 0.6)) drop-shadow(0 0 30px rgba(61, 43, 62, 0.8)) drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+    opacity: 1;
+  }
 }
+
+/* Translucency and glowing effect on click */
+.glow-fire {
+  background-color: transparent; /* Ensure there's no background color */
+  animation: pulseFire 2s infinite, shake 0.5s;
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out; /* Add smooth fade transition */
+}
+
+/* Adjusting the shake animation */
+.shake-animation {
+  animation: shake 0.5s, pulseFire 2s infinite;
+}
+
+
 .text-shadow {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Dark shadow for contrast */
 }

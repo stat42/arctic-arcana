@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 const StyleTextGenerator = () => {
   // Placeholders for constants
-  const catImages = [
+  const catImages = useMemo(() => [
     `${process.env.PUBLIC_URL}/images/catspellbinder-0.png`,
     `${process.env.PUBLIC_URL}/images/catspellbinder-1.png`,
     `${process.env.PUBLIC_URL}/images/catspellbinder-2.png`,
@@ -15,8 +15,8 @@ const StyleTextGenerator = () => {
     `${process.env.PUBLIC_URL}/images/catspellbinder-9.png`,
     `${process.env.PUBLIC_URL}/images/catspellbinder-10.png`
     // Add more images if needed
-  ];
-  const decorations = [
+  ], []); // Empty dependency array means this array won't change on re-renders
+  const decorations = useMemo(() => [
     { open: "༺•", close: "•༻" },
     { open: "⟆•†", close: "†•⟅" },
     { open: "𖤓✧", close: "✧𖤓" },
@@ -57,8 +57,8 @@ const StyleTextGenerator = () => {
     { open: "╔═◢◤", close: "◢◤═╗" },
     { open: "⫷⫸••", close: "••⫷⫸" },
     { open: "༶⸙❃", close: "❃⸙༶" }
-  ];
-  const styleMap = {
+  ],[]);
+  const styleMap = useMemo(() => ({
     "a": ["α", "ค", "ค", "ᴀ", "₳", "å", "ą", "ä", "á", "∆", "α", "Ⱥ", "ª", "Æ", "ǡ", "Ǻ", "Ã", "ª", "ᗅ", "𝒶"],
     "b": ["ß", "฿", "乃", "в", "β", "ც", "Ɓ", "฿", "ɓ", "Ƅ", "β", "ʙ", "в", "ß", "ƀ", "ß", "Ь", "ʙ", "ϐ", "β"],
     "c": ["ς", "૮", "¢", "Ꮯ", "ȼ", "ς", "Ĉ", "₵", "ç", "ʗ", "Ⲥ", "𝒸", "ς", "¢", "ć", "Č", "ḉ", "ċ", "Ç", "č"],
@@ -85,7 +85,7 @@ const StyleTextGenerator = () => {
     "x": ["א", "ж", "x", "ჯ", "×", "ẋ", "χ", "×", "Ӿ", "✗", "χ", "×", "ж", "ẋ", "ҳ", "×", "χ", "ẍ", "✗", "Ẋ"],
     "y": ["ץ", "ყ", "ϓ", "¥", "ү", "ÿ", "ý", "ÿ", "γ", "ч", "ყ", "ý", "ÿ", "ẙ", "γ", "ү", "ϒ", "ý", "ỷ", "ȳ"],
     "z": ["z", "ƶ", "ʑ", "ȥ", "z", "ž", "ʐ", "ź", "Ż", "ƶ", "ẓ", "ž", "ƶ", "ż", "Ž", "Ƶ", "Z", "Ź", "Z", "Ẕ"]
-  };
+  }), []);
 
   const [input, setInput] = useState('');
   const [selectedDecoration, setSelectedDecoration] = useState('');
@@ -94,6 +94,18 @@ const StyleTextGenerator = () => {
   const [catAnimationClass, setCatAnimationClass] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
   const [seed, setSeed] = useState(() => Math.random());
+ // Function to preload images
+ const preloadImages = useCallback(() => {
+  catImages.forEach(image => {
+    const img = new Image();
+    img.src = image;
+  });
+}, [catImages]);
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(() => {
+  preloadImages(); // Preload all cat images on component mount
+}, [preloadImages]); // Now it is included in the dependency array
 
   const stylizeText = useCallback((text, currentSeed) => {
     return text.toLowerCase().split('').map((char, index) => {
@@ -116,8 +128,8 @@ const StyleTextGenerator = () => {
 
   useEffect(() => {
     setCurrentCatIndex(Math.floor(Math.random() * catImages.length));
-  }, []);
-
+  }, [catImages.length]);  // Include catImages.length as a dependency
+  
   const handleInputChange = useCallback((e) => {
     setInput(e.target.value);
   }, []);

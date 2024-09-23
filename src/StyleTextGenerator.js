@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import BearHunt from './BearHunt'; // Make sure to import the new component
-
+import CrazyJoe from './CrazyJoe'; // Make sure to import the new component
 const StyleTextGenerator = () => {
 
   const catImages = useMemo(() => [
@@ -335,44 +335,58 @@ useEffect(() => {
   }, [isAnimating, currentCatIndex, activeTab, getRandomCatIndex]);
 
   return (
-<div className="min-h-screen w-full bg-cover bg-center bg-fixed flex flex-col items-center justify-start py-4 sm:py-8" 
-    style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
-  <div className="w-full max-w-sm">
-    {/* Tabs - Updated with larger icons and correct active states */}
-    <div className="flex">
-      <div 
-        className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tl-lg flex items-center ${activeTab === 'styleText' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        onClick={() => handleTabChange('styleText')}
-        style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
-      >
-        <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
-          <img src={`${process.env.PUBLIC_URL}/images/styletext.png`} alt="" className="w-full h-full object-contain" />
+    <div className="min-h-screen w-full bg-cover bg-center bg-fixed flex flex-col items-center justify-start py-4 sm:py-8" 
+         style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
+      <div className="w-full max-w-sm">
+        {/* Tabs - Updated with larger icons and correct active states */}
+        <div className="flex">
+          {/* Arcana Tab */}
+          <div 
+            className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tl-lg flex items-center ${activeTab === 'styleText' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => handleTabChange('styleText')}
+            style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+          >
+            <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
+              <img src={`${process.env.PUBLIC_URL}/images/styletext.png`} alt="" className="w-full h-full object-contain" />
+            </div>
+            <span className="whitespace-nowrap text-left">Arcana</span>
+          </div>
+
+          {/* Bear Hunt Tab */}
+          <div 
+            className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'bearHunt' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => handleTabChange('bearHunt')}
+            style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+          >
+            <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
+              <img src={`${process.env.PUBLIC_URL}/images/bearhunt.png`} alt="" className="w-full h-full object-contain" />
+            </div>
+            <span className="whitespace-nowrap">Bear</span>
+          </div>
+
+          {/* Crazy Joe Tab */}
+          <div 
+            className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'crazyJoe' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => handleTabChange('crazyJoe')}
+            style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+          >
+            <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
+              <img src={`${process.env.PUBLIC_URL}/images/crazyjoe.png`} alt="" className="w-full h-full object-contain" />
+            </div>
+            <span className="whitespace-nowrap">Crazy Joe</span>
+          </div>
         </div>
-        <span className="whitespace-nowrap text-left">Arcana</span>
-      </div>
-      <div 
-        className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'bearHunt' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        onClick={() => handleTabChange('bearHunt')}
-        style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
-      >
-        <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
-          <img src={`${process.env.PUBLIC_URL}/images/bearhunt.png`} alt="" className="w-full h-full object-contain" />
-        </div>
-        <span className="whitespace-nowrap">Bear</span>
-      </div>
-    </div>
+
         {/* Main form content */}
         <div className="relative bg-white bg-opacity-80 p-4 sm:p-6 rounded-b-lg rounded-tr-lg shadow-lg">
           <img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} 
                alt="Snow" 
-               className="absolute -top-7 -right-5 w-16 h-16 sm:w-24 sm:h-24 object-contain" />
-          <h1 className="text-xl sm:text-2xl font-bold text-center text-blue-800 mb-4 sm:mb-6 font-rowdies">Arctic Arcana</h1>
-          
+               className="absolute -top-7 -right-5 w-16 h-16 sm:w-24 sm:h-24 object-contain" />          
           {/* Tab Content */}
           <div className="mb-20 sm:mb-24">
             {activeTab === 'styleText' ? (
               <>
-                <div className="mb-4">
+<div className="mb-4">
                   <input
                     type="text"
                     placeholder="Enter your text here"
@@ -438,13 +452,14 @@ useEffect(() => {
       {copied ? 'Copied!' : <>Copy<br />To<br />Clipboard</>}
     </span>
   </div>
-</div>
-              </>
-            ) : (
+</div>              </>
+            ) : activeTab === 'bearHunt' ? (
               <BearHunt />
-            )}
+            ) : activeTab === 'crazyJoe' ? (
+              <CrazyJoe />
+            ) : null }
           </div>
-          
+
           {/* Cat Image */}
           <img 
             src={catImages[currentCatIndex]}
@@ -456,6 +471,7 @@ useEffect(() => {
       </div>
     </div>
   );
+
 };
 
 export default React.memo(StyleTextGenerator);

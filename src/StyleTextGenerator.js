@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import BearHunt from './BearHunt'; // Make sure to import the new component
 
 const StyleTextGenerator = () => {
 
@@ -163,7 +164,9 @@ const StyleTextGenerator = () => {
     "y": ["ץ", "ყ", "ϓ", "¥", "ү", "ÿ", "ý", "ÿ", "γ", "ч", "ყ", "ý", "ÿ", "ẙ", "γ", "ү", "ϒ", "ý", "ỷ", "ȳ"],
     "z": ["z", "ƶ", "ʑ", "ȥ", "z", "ž", "ʐ", "ź", "Ż", "ƶ", "ẓ", "ž", "ƶ", "ż", "Ž", "Ƶ", "Z", "Ź", "Z", "Ẕ"]
   }), []);
-
+  const [activeTab, setActiveTab] = useState('styleText');
+  const [styleTextCatIndex, setStyleTextCatIndex] = useState(0);
+  const [bearHuntCatIndex, setBearHuntCatIndex] = useState(0);
   const [input, setInput] = useState('');
   const [selectedDecoration, setSelectedDecoration] = useState('');
   const [copied, setCopied] = useState(false);
@@ -272,6 +275,40 @@ useEffect(() => {
   }, []);
   
 
+  const getRandomCatIndex = useCallback((currentIndex) => {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * catImages.length);
+    } while (newIndex === currentIndex);
+    return newIndex;
+  }, [catImages.length]);
+
+  const handleTabChange = useCallback((tab) => {
+    if (tab === activeTab) return;
+
+    setIsAnimating(true);
+    setCatAnimationClass('fade-out');
+    
+    setTimeout(() => {
+      setActiveTab(tab);
+      let newIndex;
+      if (tab === 'styleText') {
+        newIndex = getRandomCatIndex(styleTextCatIndex);
+        setStyleTextCatIndex(newIndex);
+      } else {
+        newIndex = getRandomCatIndex(bearHuntCatIndex);
+        setBearHuntCatIndex(newIndex);
+      }
+      setCurrentCatIndex(newIndex);
+      setCatAnimationClass('fade-in');
+      
+      setTimeout(() => {
+        setCatAnimationClass('');
+        setIsAnimating(false);
+      }, 500);
+    }, 250);
+  }, [activeTab, styleTextCatIndex, bearHuntCatIndex, getRandomCatIndex]);
+
   const handleCatClick = useCallback(() => {
     if (isAnimating) return;
   
@@ -279,13 +316,15 @@ useEffect(() => {
     setCatAnimationClass('fade-out');
   
     setTimeout(() => {
-      setCurrentCatIndex(prevIndex => {
-        let newIndex;
-        do {
-          newIndex = Math.floor(Math.random() * catImages.length);
-        } while (newIndex === prevIndex);
-        return newIndex;
-      });
+      const newIndex = getRandomCatIndex(currentCatIndex);
+      
+      if (activeTab === 'styleText') {
+        setStyleTextCatIndex(newIndex);
+      } else {
+        setBearHuntCatIndex(newIndex);
+      }
+      setCurrentCatIndex(newIndex);
+      
       setCatAnimationClass('fade-in');
   
       setTimeout(() => {
@@ -293,78 +332,127 @@ useEffect(() => {
         setIsAnimating(false);
       }, 500);
     }, 250);
-  }, [isAnimating, catImages.length]);
+  }, [isAnimating, currentCatIndex, activeTab, getRandomCatIndex]);
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
-<div className="relative max-w-md w-full bg-white bg-opacity-80 p-8 rounded-lg shadow-lg mx-4 sm:mx-6 lg:mx-8">
-<img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} alt="Snow" className="absolute -top-7 -right-5 w-24 h-24 object-contain" />
-        <h1 className="text-2xl font-bold text-center text-blue-800 mb-6 font-rowdies">Arctic Arcana</h1>
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Enter your text here"
-            value={input}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
+<div className="min-h-screen w-full bg-cover bg-center bg-fixed flex flex-col items-center justify-start py-4 sm:py-8" 
+    style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
+  <div className="w-full max-w-sm">
+    {/* Tabs - Updated with larger icons and correct active states */}
+    <div className="flex">
+      <div 
+        className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tl-lg flex items-center ${activeTab === 'styleText' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+        onClick={() => handleTabChange('styleText')}
+        style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+      >
+        <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
+          <img src={`${process.env.PUBLIC_URL}/images/styletext.png`} alt="" className="w-full h-full object-contain" />
+        </div>
+        <span className="whitespace-nowrap text-left">Arcana</span>
+      </div>
+      <div 
+        className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'bearHunt' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+        onClick={() => handleTabChange('bearHunt')}
+        style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+      >
+        <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
+          <img src={`${process.env.PUBLIC_URL}/images/bearhunt.png`} alt="" className="w-full h-full object-contain" />
+        </div>
+        <span className="whitespace-nowrap">Bear</span>
+      </div>
+    </div>
+        {/* Main form content */}
+        <div className="relative bg-white bg-opacity-80 p-4 sm:p-6 rounded-b-lg rounded-tr-lg shadow-lg">
+          <img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} 
+               alt="Snow" 
+               className="absolute -top-7 -right-5 w-16 h-16 sm:w-24 sm:h-24 object-contain" />
+          <h1 className="text-xl sm:text-2xl font-bold text-center text-blue-800 mb-4 sm:mb-6 font-rowdies">Arctic Arcana</h1>
+          
+          {/* Tab Content */}
+          <div className="mb-20 sm:mb-24">
+            {activeTab === 'styleText' ? (
+              <>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Enter your text here"
+                    value={input}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <select 
+                    onChange={handleDecorationChange}
+                    value={selectedDecoration}
+                    className="w-full p-2 border border-gray-300 rounded"
+                  >
+                    <option value="">Select a decoration</option>
+                    {decorations.map((decoration, index) => (
+                      <option key={index} value={decoration.open}>
+                        {decoration.open} Text {decoration.close}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="bg-white p-4 rounded border border-gray-300 mb-4 min-h-[80px] sm:min-h-[100px]">
+                  <p className="text-center text-base sm:text-lg font-medium text-blue-800 break-all">
+                    {decoratedOutput}
+                  </p>
+                </div>
+               {/* Buttons */}
+               <div className="flex justify-start w-full space-x-4 sm:space-x-6 ml-8">
+               <div 
+    onClick={handleShakeItUp} 
+    className={`relative w-20 h-20 sm:w-24 sm:h-24 cursor-pointer shakeable ${isShaking ? 'glow-fire' : ''}`} 
+    style={{ 
+      backgroundImage: `url(${process.env.PUBLIC_URL}/images/FireCrystal.png)`, 
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center', 
+      opacity: isShaking ? 0.8 : 1 
+    }}
+  >
+    <span className="absolute inset-0 flex items-center justify-center text-white text-shadow text-center text-xs sm:text-sm">
+      <>Shake<br /> it up!</>
+    </span>
+  </div>
+  <div 
+    onClick={handleCopy} 
+    className={`relative w-20 h-20 sm:w-24 sm:h-24 cursor-pointer flex items-center justify-center ${copied ? 'animate-pulseShrinkGrow' : ''}`} 
+    style={{ 
+      backgroundImage: `url(${process.env.PUBLIC_URL}/images/CopyToClipboard.png)`, 
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center' 
+    }}
+  >
+    <span 
+      className="text-center text-black text-shadow text-xs sm:text-sm"
+      style={{
+        transform: 'rotate(-10deg)',
+        position: 'relative',
+        top: '-15px',  
+        left: '5px',    
+        lineHeight: '0.9'  
+      }}
+    >
+      {copied ? 'Copied!' : <>Copy<br />To<br />Clipboard</>}
+    </span>
+  </div>
+</div>
+              </>
+            ) : (
+              <BearHunt />
+            )}
+          </div>
+          
+          {/* Cat Image */}
+          <img 
+            src={catImages[currentCatIndex]}
+            alt="Cat" 
+            className={`absolute bottom-0 right-[-45px] sm:right-[-40px] w-40 h-60 sm:w-50 sm:h-80 object-contain ${catAnimationClass}`} 
+            onClick={handleCatClick}
           />
         </div>
-        <div className="mb-4">
-          <select 
-            onChange={handleDecorationChange}
-            value={selectedDecoration}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Select a decoration</option>
-            {decorations.map((decoration, index) => (
-              <option key={index} value={decoration.open}>
-                {decoration.open} Text {decoration.close}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="bg-white p-4 rounded border border-gray-300 mb-4 min-h-[100px]">
-          <p className="text-center text-lg font-medium text-blue-800 break-all">
-            {decoratedOutput}
-          </p>
-        </div>
-        <div className="flex space-x-2">
-        <div 
-  onClick={handleShakeItUp} 
-  className={`relative w-32 h-32 cursor-pointer shakeable ${isShaking ? 'glow-fire' : ''}`} 
-  style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/FireCrystal.png)`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: isShaking ? 0.8 : 1 }}  // Opacity for translucency when shaking
->
-  <span className="absolute inset-0 flex items-center justify-center text-white text-shadow text-center">
-    <>Shake<br /> it up!</>
-  </span>
-</div>
-
-
-          <div 
-            onClick={handleCopy} 
-            className={`relative w-32 h-32 cursor-pointer flex items-center justify-center ${copied ? 'animate-pulseShrinkGrow' : ''}`} 
-            style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/CopyToClipboard.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-          >
-            <span 
-              className="text-center text-black text-shadow"
-              style={{
-                transform: 'rotate(-10deg)',
-                position: 'relative',
-                top: '-30px',  
-                left: '5px',    
-                lineHeight: '0.9'  
-              }}
-            >
-              {copied ? 'Copied!' : <>Copy<br />To<br />Clipboard</>}
-            </span>
-          </div>
-        </div>
-        <img 
-          src={catImages[currentCatIndex]}
-          alt="Cat" 
-          className={`absolute bottom-0 right-[-40px] w-50 h-80 object-contain ${catAnimationClass}`} 
-          onClick={handleCatClick}
-        />
       </div>
     </div>
   );

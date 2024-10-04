@@ -1,5 +1,5 @@
 import React from 'react';
-import StyleTextGenerator from './StyleTextGenerator';
+import StyleTextGenerator from './MainContainer';
 
 function App() {
   return (

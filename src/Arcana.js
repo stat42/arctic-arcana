@@ -1,23 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import BearHunt from './BearHunt'; // Make sure to import the new component
-import CrazyJoe from './CrazyJoe'; // Make sure to import the new component
-import FrostfireMine from './FrostfireMine'; // Make sure to import the new component
-const StyleTextGenerator = () => {
+import React, { useState, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
 
-  const catImages = useMemo(() => [
-    `${process.env.PUBLIC_URL}/images/catspellbinder-0.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-1.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-2.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-3.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-4.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-5.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-6.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-7.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-8.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-9.png`,
-    `${process.env.PUBLIC_URL}/images/catspellbinder-10.png`
-    // Add more images if needed
-  ], []); // Empty dependency array means this array won't change on re-renders
+const Arcana = () => {
+  const [input, setInput] = useState('');
+  const [selectedDecoration, setSelectedDecoration] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [seed, setSeed] = useState(() => Math.random());
+  const [isShaking, setIsShaking] = useState(false);
+
   const decorations = useMemo(() => [
     { open: "༺═•", close: "•═༻" },
     { open: "⧼✵", close: "✵⧽" },
@@ -165,30 +155,6 @@ const StyleTextGenerator = () => {
     "y": ["ץ", "ყ", "ϓ", "¥", "ү", "ÿ", "ý", "ÿ", "γ", "ч", "ყ", "ý", "ÿ", "ẙ", "γ", "ү", "ϒ", "ý", "ỷ", "ȳ"],
     "z": ["z", "ƶ", "ʑ", "ȥ", "z", "ž", "ʐ", "ź", "Ż", "ƶ", "ẓ", "ž", "ƶ", "ż", "Ž", "Ƶ", "Z", "Ź", "Z", "Ẕ"]
   }), []);
-  const [activeTab, setActiveTab] = useState('styleText');
-  const [styleTextCatIndex, setStyleTextCatIndex] = useState(0);
-  const [bearHuntCatIndex, setBearHuntCatIndex] = useState(0);
-  const [input, setInput] = useState('');
-  const [selectedDecoration, setSelectedDecoration] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [currentCatIndex, setCurrentCatIndex] = useState(0);
-  const [catAnimationClass, setCatAnimationClass] = useState('');
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [seed, setSeed] = useState(() => Math.random());
-  const [isShaking, setIsShaking] = useState(false); // Define the state for shaking animation
-
- // Function to preload images
- const preloadImages = useCallback(() => {
-  catImages.forEach(image => {
-    const img = new Image();
-    img.src = image;
-  });
-}, [catImages]);
-
-// eslint-disable-next-line react-hooks/exhaustive-deps
-useEffect(() => {
-  preloadImages(); // Preload all cat images on component mount
-}, [preloadImages]); // Now it is included in the dependency array
 
   const stylizeText = useCallback((text, currentSeed) => {
     return text.toLowerCase().split('').map((char, index) => {
@@ -209,10 +175,6 @@ useEffect(() => {
     return `${decoration.open}${output}${decoration.close}`;
   }, [output, selectedDecoration, decorations]);
 
-  useEffect(() => {
-    setCurrentCatIndex(Math.floor(Math.random() * catImages.length));
-  }, [catImages.length]);  // Include catImages.length as a dependency
-  
   const handleInputChange = useCallback((e) => {
     setInput(e.target.value);
   }, []);
@@ -222,269 +184,98 @@ useEffect(() => {
   }, []);
 
   const handleCopy = useCallback(() => {
-    const copyToClipboard = (text) => {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        return navigator.clipboard.writeText(text);
-      } else {
-        // Create a temporary element
-        const elem = document.createElement('textarea');
-        // Set its value to the text we want to copy
-        elem.value = text;
-        // Make it readonly to be tamper-proof
-        elem.setAttribute('readonly', '');
-        // Move outside the screen to make it invisible
-        elem.style.position = 'absolute';
-        elem.style.left = '-9999px';
-        // Append the element to the body
-        document.body.appendChild(elem);
-        // Check if there's any content selected previously
-        const selected = 
-          document.getSelection().rangeCount > 0
-            ? document.getSelection().getRangeAt(0)
-            : false;
-        // Select the text
-        elem.select();
-        // Use the classic 'copy' command
-        document.execCommand('copy');
-        // Remove the element
-        document.body.removeChild(elem);
-        // If a selection existed before copying
-        if (selected) {
-          // Unselect everything on the HTML document
-          document.getSelection().removeAllRanges();
-          // Restore the original selection
-          document.getSelection().addRange(selected);
-        }
-      }
-    };
-  
-    copyToClipboard(decoratedOutput);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(decoratedOutput).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   }, [decoratedOutput]);
 
   const handleShakeItUp = useCallback(() => {
     setSeed(Math.random());
-    setIsShaking(true); // Activate the shake and glow effect
+    setIsShaking(true);
   
     const element = document.querySelector('.shakeable');
     element.classList.add('shake-animation');
     setTimeout(() => {
       element.classList.remove('shake-animation');
-      setIsShaking(false); // Remove shake and glow after animation completes
-    }, 500); // Match the duration of the shake animation
+      setIsShaking(false);
+    }, 500);
   }, []);
-  
-
-  const getRandomCatIndex = useCallback((currentIndex) => {
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * catImages.length);
-    } while (newIndex === currentIndex);
-    return newIndex;
-  }, [catImages.length]);
-
-  const handleTabChange = useCallback((tab) => {
-    if (tab === activeTab) return;
-
-    setIsAnimating(true);
-    setCatAnimationClass('fade-out');
-    
-    setTimeout(() => {
-      setActiveTab(tab);
-      let newIndex;
-      if (tab === 'styleText') {
-        newIndex = getRandomCatIndex(styleTextCatIndex);
-        setStyleTextCatIndex(newIndex);
-      } else {
-        newIndex = getRandomCatIndex(bearHuntCatIndex);
-        setBearHuntCatIndex(newIndex);
-      }
-      setCurrentCatIndex(newIndex);
-      setCatAnimationClass('fade-in');
-      
-      setTimeout(() => {
-        setCatAnimationClass('');
-        setIsAnimating(false);
-      }, 500);
-    }, 250);
-  }, [activeTab, styleTextCatIndex, bearHuntCatIndex, getRandomCatIndex]);
-
-  const handleCatClick = useCallback(() => {
-    if (isAnimating) return;
-  
-    setIsAnimating(true);
-    setCatAnimationClass('fade-out');
-  
-    setTimeout(() => {
-      const newIndex = getRandomCatIndex(currentCatIndex);
-      
-      if (activeTab === 'styleText') {
-        setStyleTextCatIndex(newIndex);
-      } else {
-        setBearHuntCatIndex(newIndex);
-      }
-      setCurrentCatIndex(newIndex);
-      
-      setCatAnimationClass('fade-in');
-  
-      setTimeout(() => {
-        setCatAnimationClass('');
-        setIsAnimating(false);
-      }, 500);
-    }, 250);
-  }, [isAnimating, currentCatIndex, activeTab, getRandomCatIndex]);
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-center bg-fixed flex flex-col items-center justify-start py-4 sm:py-8" 
-         style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/a9e2fc4d-73e5-434e-bc50-686c838ffce2.png)` }}>
-      <div className="w-full max-w-sm">
-        {/* Tabs - Updated with larger icons and correct active states */}
-        <div className="flex">
-          {/* Arcana Tab */}
-          <div 
-            className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tl-lg flex items-center ${activeTab === 'styleText' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => handleTabChange('styleText')}
-            style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+    <div>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Enter your text here"
+          value={input}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+      </div>
+      <div className="mb-4">
+        <select
+          onChange={handleDecorationChange}
+          value={selectedDecoration}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">Select a decoration</option>
+          {decorations.map((decoration, index) => (
+            <option key={index} value={decoration.open}>
+              {decoration.open} Text {decoration.close}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="bg-white p-4 rounded border border-gray-300 mb-4 min-h-[80px] sm:min-h-[100px]">
+        <p className="text-center text-base sm:text-lg font-medium text-blue-800 break-all">
+          {decoratedOutput}
+        </p>
+      </div>
+      <div className="flex justify-start w-full space-x-4 sm:space-x-6 ml-8">
+        <motion.div
+          onClick={handleShakeItUp}
+          className={`relative w-20 h-20 sm:w-24 sm:h-24 cursor-pointer shakeable ${isShaking ? 'glow-fire' : ''}`}
+          style={{
+            backgroundImage: `url(${process.env.PUBLIC_URL}/images/FireCrystal.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: isShaking ? 0.8 : 1
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="absolute inset-0 flex items-center justify-center text-white text-shadow text-center text-xs sm:text-sm">
+            <>Shake<br /> it up!</>
+          </span>
+        </motion.div>
+        <motion.div 
+          onClick={handleCopy} 
+          className={`relative w-20 h-20 sm:w-24 sm:h-24 cursor-pointer flex items-center justify-center ${copied ? 'animate-pulseShrinkGrow' : ''}`} 
+          style={{ 
+            backgroundImage: `url(${process.env.PUBLIC_URL}/images/CopyToClipboard.png)`, 
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center' 
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span 
+            className="text-center text-black text-shadow text-xs sm:text-sm"
+            style={{
+              transform: 'rotate(-10deg)',
+              position: 'relative',
+              top: '-15px',  
+              left: '5px',    
+              lineHeight: '0.9'  
+            }}
           >
-            <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
-              <img src={`${process.env.PUBLIC_URL}/images/styletext.png`} alt="" className="w-full h-full object-contain" />
-            </div>
-            <span className="whitespace-nowrap text-left">Arcana</span>
-          </div>
-
-          {/* Bear Hunt Tab */}
-          <div 
-            className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'bearHunt' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => handleTabChange('bearHunt')}
-            style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
-          >
-            <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
-              <img src={`${process.env.PUBLIC_URL}/images/bearhunt.png`} alt="" className="w-full h-full object-contain" />
-            </div>
-            <span className="whitespace-nowrap">Bear</span>
-          </div>
-
-          {/* Crazy Joe Tab */}
-          <div 
-            className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'crazyJoe' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => handleTabChange('crazyJoe')}
-            style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
-          >
-            <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
-              <img src={`${process.env.PUBLIC_URL}/images/crazyjoe.png`} alt="" className="w-full h-full object-contain" />
-            </div>
-            <span className="whitespace-nowrap">Joe</span>
-          </div>
-            {/* Frostfire Mine Tab */}
-<div 
-  className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'frostfireMine' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-  onClick={() => handleTabChange('frostfireMine')}
-  style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
->
-  <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
-    <img src={`${process.env.PUBLIC_URL}/images/frostfiremine.png`} alt="" className="w-full h-full object-contain" />
-  </div>
-  <span className="whitespace-nowrap">Mine</span>
-</div>
-        </div>
-        {/* Main form content */}
-        <div className="relative bg-white bg-opacity-80 p-4 sm:p-6 rounded-b-lg rounded-tr-lg shadow-lg">
-          <img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} 
-               alt="Snow" 
-               className="absolute -top-7 -right-5 w-16 h-16 sm:w-24 sm:h-24 object-contain" />          
-          {/* Tab Content */}
-          <div className="mb-20 sm:mb-24">
-            {activeTab === 'styleText' ? (
-              <>
-<div className="mb-4">
-                  <input
-                    type="text"
-                    placeholder="Enter your text here"
-                    value={input}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="mb-4">
-                  <select 
-                    onChange={handleDecorationChange}
-                    value={selectedDecoration}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  >
-                    <option value="">Select a decoration</option>
-                    {decorations.map((decoration, index) => (
-                      <option key={index} value={decoration.open}>
-                        {decoration.open} Text {decoration.close}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="bg-white p-4 rounded border border-gray-300 mb-4 min-h-[80px] sm:min-h-[100px]">
-                  <p className="text-center text-base sm:text-lg font-medium text-blue-800 break-all">
-                    {decoratedOutput}
-                  </p>
-                </div>
-               {/* Buttons */}
-               <div className="flex justify-start w-full space-x-4 sm:space-x-6 ml-8">
-               <div 
-    onClick={handleShakeItUp} 
-    className={`relative w-20 h-20 sm:w-24 sm:h-24 cursor-pointer shakeable ${isShaking ? 'glow-fire' : ''}`} 
-    style={{ 
-      backgroundImage: `url(${process.env.PUBLIC_URL}/images/FireCrystal.png)`, 
-      backgroundSize: 'cover', 
-      backgroundPosition: 'center', 
-      opacity: isShaking ? 0.8 : 1 
-    }}
-  >
-    <span className="absolute inset-0 flex items-center justify-center text-white text-shadow text-center text-xs sm:text-sm">
-      <>Shake<br /> it up!</>
-    </span>
-  </div>
-  <div 
-    onClick={handleCopy} 
-    className={`relative w-20 h-20 sm:w-24 sm:h-24 cursor-pointer flex items-center justify-center ${copied ? 'animate-pulseShrinkGrow' : ''}`} 
-    style={{ 
-      backgroundImage: `url(${process.env.PUBLIC_URL}/images/CopyToClipboard.png)`, 
-      backgroundSize: 'cover', 
-      backgroundPosition: 'center' 
-    }}
-  >
-    <span 
-      className="text-center text-black text-shadow text-xs sm:text-sm"
-      style={{
-        transform: 'rotate(-10deg)',
-        position: 'relative',
-        top: '-15px',  
-        left: '5px',    
-        lineHeight: '0.9'  
-      }}
-    >
-      {copied ? 'Copied!' : <>Copy<br />To<br />Clipboard</>}
-    </span>
-  </div>
-</div>              </>
-            ) : activeTab === 'bearHunt' ? (
-              <BearHunt />
-            ) : activeTab === 'crazyJoe' ? (
-              <CrazyJoe />
-            ) : activeTab === 'frostfireMine' ? (
-              <FrostfireMine />
-            ) : null }
-          </div>
-
-          {/* Cat Image */}
-          <img 
-            src={catImages[currentCatIndex]}
-            alt="Cat" 
-            className={`absolute bottom-0 right-[-45px] sm:right-[-40px] w-40 h-60 sm:w-50 sm:h-80 object-contain ${catAnimationClass}`} 
-            onClick={handleCatClick}
-          />
-        </div>
+            {copied ? 'Copied!' : <>Copy<br />To<br />Clipboard</>}
+          </span>
+        </motion.div>
       </div>
     </div>
   );
-
 };
 
-export default React.memo(StyleTextGenerator);
+export default Arcana;

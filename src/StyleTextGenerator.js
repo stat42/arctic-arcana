@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import BearHunt from './BearHunt'; // Make sure to import the new component
 import CrazyJoe from './CrazyJoe'; // Make sure to import the new component
+import FrostfireMine from './FrostfireMine'; // Make sure to import the new component
 const StyleTextGenerator = () => {
 
   const catImages = useMemo(() => [
@@ -373,10 +374,20 @@ useEffect(() => {
             <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
               <img src={`${process.env.PUBLIC_URL}/images/crazyjoe.png`} alt="" className="w-full h-full object-contain" />
             </div>
-            <span className="whitespace-nowrap">Crazy Joe</span>
+            <span className="whitespace-nowrap">Joe</span>
           </div>
+            {/* Frostfire Mine Tab */}
+<div 
+  className={`cursor-pointer px-2 py-1 text-sm sm:text-base rounded-tr-lg flex items-center ${activeTab === 'frostfireMine' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+  onClick={() => handleTabChange('frostfireMine')}
+  style={{ height: "40px", paddingLeft: "0" }} // Reduced padding left for the tab
+>
+  <div style={{ width: "60px", height: "60px", marginRight: "-15px", marginLeft: "-12px" }}>
+    <img src={`${process.env.PUBLIC_URL}/images/frostfiremine.png`} alt="" className="w-full h-full object-contain" />
+  </div>
+  <span className="whitespace-nowrap">Mine</span>
+</div>
         </div>
-
         {/* Main form content */}
         <div className="relative bg-white bg-opacity-80 p-4 sm:p-6 rounded-b-lg rounded-tr-lg shadow-lg">
           <img src={`${process.env.PUBLIC_URL}/images/freePiksnowcap.png`} 
@@ -457,6 +468,8 @@ useEffect(() => {
               <BearHunt />
             ) : activeTab === 'crazyJoe' ? (
               <CrazyJoe />
+            ) : activeTab === 'frostfireMine' ? (
+              <FrostfireMine />
             ) : null }
           </div>
 

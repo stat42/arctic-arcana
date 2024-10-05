@@ -52,7 +52,7 @@ const rarityGradient = {
   legendary: 'from-orange-600 to-orange-400'
 };
 
-const HeroImage = ({ hero, isExcluded, onToggle, isSelectable = true }) => {
+const HeroImage = ({ hero, isExcluded, onToggle, isSelectable = true, size = 'normal' }) => {
   const handleClick = (e) => {
     if (isSelectable && onToggle) {
       e.stopPropagation();
@@ -60,10 +60,26 @@ const HeroImage = ({ hero, isExcluded, onToggle, isSelectable = true }) => {
     }
   };
 
+  const sizeClasses = {
+    normal: 'w-16 h-24',
+    large: 'w-full h-full'
+  };
+
+  const textSizeClasses = {
+    normal: 'text-[8px]',
+    large: 'text-sm'
+  };
+
   return (
-    <div className="relative w-[80px] h-[120px]">
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`${sizeClasses[size]} relative`}
+    >
       <div
-        className={`w-full h-full bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden ${isSelectable ? 'cursor-pointer' : ''}`}
+        className={`w-full h-full bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden ${
+          isSelectable ? 'cursor-pointer' : ''
+        }`}
         onClick={handleClick}
       >
         <img
@@ -73,30 +89,35 @@ const HeroImage = ({ hero, isExcluded, onToggle, isSelectable = true }) => {
           style={{ objectPosition: 'center center' }}
         />
         
-        <div className={`absolute bottom-0 left-0 w-full text-center py-1 text-white font-semibold bg-gradient-to-t ${rarityGradient[hero.rarity]}`}>
-          <span className="text-xs">{hero.name}</span>
+        <div className={`absolute bottom-0 left-0 w-full flex justify-center items-center py-1 bg-gradient-to-t ${
+          rarityGradient[hero.rarity]
+        }`}>
+          <span className={`${textSizeClasses[size]} text-white font-semibold px-1`}>
+            {hero.name}
+          </span>
         </div>
+        
+        {isSelectable && (
+          <span
+            className="absolute -top-1 -right-1 z-10 rounded-full w-4 h-4 flex items-center justify-center shadow-lg cursor-pointer"
+            style={{
+              background: isExcluded ? 'linear-gradient(145deg, #3b82f6, #1d4ed8)' : 'linear-gradient(145deg, #ff751a, #ff3a3a)',
+              border: '1px solid white',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+            }}
+            onClick={handleClick}
+          >
+            {isExcluded ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <span className="bg-white w-1.5 h-0.5 rounded-full" style={{ display: 'block' }} />
+            )}
+          </span>
+        )}
       </div>
-      {isSelectable && (
-        <span
-          className="absolute -top-2 -right-2 z-10 rounded-full w-6 h-6 flex items-center justify-center shadow-lg cursor-pointer"
-          style={{
-            background: isExcluded ? 'linear-gradient(145deg, #3b82f6, #1d4ed8)' : 'linear-gradient(145deg, #ff751a, #ff3a3a)',
-            border: '2px solid white',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
-          }}
-          onClick={handleClick}
-        >
-          {isExcluded ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          ) : (
-            <span className="bg-white w-3 h-0.5 rounded-full" style={{ display: 'block' }} />
-          )}
-        </span>
-      )}
-    </div>
+    </motion.div>
   );
 };
 const TroopImage = ({ type }) => (
@@ -106,6 +127,7 @@ const TroopImage = ({ type }) => (
     className="w-8 h-8 object-contain"
   />
 );
+
 
 const Formation = ({ infantry, lancers, marksmen }) => (
   <div className="mt-4 relative">
@@ -160,34 +182,29 @@ const HeroSelection = ({ selectedHeroes, setSelectedHeroes, selectedSeason, setS
           {[...Array(9).keys()].map(season => (
             <button
               key={season + 1}
-              className={`w-12 h-12 rounded-full font-semibold ${
+              className={`w-8 h-8 rounded-full font-semibold ${
                 selectedSeason >= season + 1
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 text-gray-800'
               }`}
               onClick={() => handleSeasonSelect(season + 1)}
             >
-              S{season + 1}
+              <span className="text-xs">S{season + 1}</span>
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-4 gap-3 flex-grow">
-        {filteredHeroes.map((hero) => {
-          const isExcluded = selectedHeroes.includes(hero.id);
-          return (
-            <motion.div
-              key={hero.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+        <div className="grid grid-cols-4 gap-2 flex-grow">
+          {filteredHeroes.map((hero) => {
+            const isExcluded = selectedHeroes.includes(hero.id);
+            return (
               <HeroImage
+                key={hero.id}
                 hero={hero}
                 isExcluded={isExcluded}
                 onToggle={toggleHero}
                 isSelectable={true}
               />
-            </motion.div>
             );
           })}
         </div>
@@ -303,7 +320,6 @@ const RallyPreference = ({ rallyPreference, setRallyPreference, selectedEvent, s
     const formations = [];
     const usedHeroes = new Set();
   
-    // For both joining and leading, ensure we populate strictly in the preference order
     const setupData = eventRallySetup[selectedEvent][type];
     const positions = ['leftHero', 'middleHero', 'rightHero'];
   
@@ -314,7 +330,6 @@ const RallyPreference = ({ rallyPreference, setRallyPreference, selectedEvent, s
         const preferenceOrder = setupData[position];
         let hero = null;
   
-        // Find the first available hero in the preference order
         for (let j = 0; j < preferenceOrder.length; j++) {
           const potentialHero = availableHeroes.find(
             (h) => h.id === preferenceOrder[j] && !usedHeroes.has(h.id)
@@ -327,31 +342,35 @@ const RallyPreference = ({ rallyPreference, setRallyPreference, selectedEvent, s
         }
   
         if (hero) {
-          formationHeroes.push(<HeroImage key={hero.id} hero={hero} isSelectable={false} />);
+          formationHeroes.push(
+            <div key={hero.id} className="w-24 h-36 rounded-lg overflow-hidden">
+              <HeroImage hero={hero} isSelectable={false} size="large" />
+            </div>
+          );
         } else {
           formationHeroes.push(
-            <div key={position} className="w-[70px] h-[110px] bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-3xl font-bold">+</span>
+            <div key={position} className="w-24 h-36 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white text-4xl font-bold">+</span>
             </div>
           );
         }
       });
   
-      if (formationHeroes.some((hero) => hero.props.hero)) {
+      if (formationHeroes.some((hero) => hero.props.children?.props?.hero)) {
         formations.push(
-          <div key={i} className="mb-4">
+          <div key={i} className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Rally Configuration {i + 1}</h3>
-            <div className="flex items-center mb-2 justify-start space-x-2">{formationHeroes}</div>
+            <div className="flex items-center mb-2 justify-start space-x-4">{formationHeroes}</div>
           </div>
         );
       } else {
-        break; // Stop if we don't have heroes for this formation
+        break;
       }
     }
   
     return (
-      <section className="mb-6 bg-green-50 p-3 rounded-lg shadow">
-        <div className="flex items-center space-x-2 mb-2 relative">
+      <section className="mb-6 bg-green-50 p-4 rounded-lg shadow">
+        <div className="flex items-center space-x-2 mb-4 relative">
           <div className="bg-orange-500 text-white font-bold py-2 px-6 rounded-lg shadow-md relative inline-block">
             <span className="text-lg" style={{ textShadow: '1px 1px 2px black' }}>
               {type === 'joining' ? 'Joining a Rally (preferential order)' : 'Rally Captain Setup'}
@@ -359,7 +378,7 @@ const RallyPreference = ({ rallyPreference, setRallyPreference, selectedEvent, s
             <img
               src={`${process.env.PUBLIC_URL}/images/rallyflag.png`}
               alt="Rally Flag"
-              className="absolute -top-8 -left-8 w-20 h-20"
+              className="absolute -top-8 -left-8 w-16 h-16"
               style={{ objectFit: 'contain' }}
             />
           </div>

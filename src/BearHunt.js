@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // Map hero types to their gradient colors
 const heroTypeGradient = {
   Jeronimo: 'from-orange-600 to-orange-400',
-  Molly: 'from-purple-600 to-purple-400',
+  Molly: 'from-orange-600 to-orange-400',
   Bahiti: 'from-purple-600 to-purple-400',
   Natalia: 'from-orange-600 to-orange-400',
   Jessie: 'from-purple-600 to-purple-400',

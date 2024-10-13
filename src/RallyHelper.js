@@ -173,7 +173,7 @@ const HeroSelection = ({ selectedHeroes, setSelectedHeroes, selectedSeason, setS
 
   return (
     <div className="space-y-4">
-      <p className="text-sm font-medium">Click on the heroes to exclude (unleveled, unowned):</p>
+      <p className="text-sm font-medium">Hereo's you select here will not be included in the Rally Helper wizard. Click on heroes to remove them (exclude). </p>
 
       <div className="flex">
         {/* Vertical Season Selection Buttons */}

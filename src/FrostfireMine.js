@@ -66,15 +66,6 @@ const FrostfireMine = () => {
             Unlocking the right skills will be key to dominating Frostfire Mine.
           </p>
 
-          {/* Skill Tree Image */}
-          <div className="my-4">
-          <img
-            src={`${process.env.PUBLIC_URL}/images/skillTree.png`}
-            alt="Skill Tree"
-            className="w-full rounded-lg shadow-lg"  
-          />
-            {/* <img src="/skillTree.png" alt="Skill Tree" className="w-full rounded-lg shadow-lg" /> */}
-          </div>
 
           {/* Skill Descriptions with Highlights */}
           <div className="bg-white p-4 rounded shadow-inner mt-4">
@@ -93,6 +84,7 @@ const FrostfireMine = () => {
             <h4 className="font-semibold mt-4 mb-2">5th Skill - Right Branch</h4>
             <p>Use this skill during vein outbursts to get a 66% gathering speed boost. Activate before sending troops and do not recall until the 5-minute timer is up.</p>
           </div>
+          
         </section>
       )}
 

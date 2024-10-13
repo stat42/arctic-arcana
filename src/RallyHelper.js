@@ -128,7 +128,6 @@ const TroopImage = ({ type }) => (
   />
 );
 
-
 const Formation = ({ infantry, lancers, marksmen }) => (
   <div className="mt-4 relative">
     <p className="text-sm font-semibold mb-1 text-center">Ideal Troop Formation Ratio:</p>
@@ -194,7 +193,7 @@ const HeroSelection = ({ selectedHeroes, setSelectedHeroes, selectedSeason, setS
           ))}
         </div>
 
-        <div className="grid grid-cols-4 gap-2 flex-grow">
+        <div className="grid grid-cols-4 gap-2 flex-grow items-start justify-items-center sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
           {filteredHeroes.map((hero) => {
             const isExcluded = selectedHeroes.includes(hero.id);
             return (
